@@ -43,6 +43,15 @@ const DEMO_ORDERS: Order[] = [
   },
 ];
 
+const STATUS_BADGES: Record<OrderStatus, string> = {
+  pendiente: 'text-bg-warning',
+  pagado: 'text-bg-success',
+  preparando: 'text-bg-primary',
+  en_camino: 'text-bg-secondary',
+  entregado: 'text-bg-success',
+  anulado: 'text-bg-danger',
+};
+
 export default function Orders() {
   const { user } = useAuth();
   const [orders] = useState<Order[]>(DEMO_ORDERS);
@@ -57,14 +66,14 @@ export default function Orders() {
       <p className="page-subtitle">Hola, {user?.fullName}. Aquí están tus órdenes.</p>
 
       {orders.length === 0 ? (
-        <div className="orders-empty">
+        <div className="orders-empty card border-0 shadow-sm">
           <span>📋</span>
           <p>Aún no tienes pedidos.</p>
         </div>
       ) : (
         <div className="orders-list">
           {orders.map((order) => (
-            <div key={order.id} className="order-card card">
+            <div key={order.id} className="order-card card border-0 shadow-sm">
               <div className="order-card__header">
                 <div>
                   <h3>Pedido #FKS-{String(order.id).padStart(5, '0')}</h3>
@@ -76,8 +85,8 @@ export default function Orders() {
                   </p>
                 </div>
                 <span
-                  className="order-card__status"
-                  style={{ color: STATUS_COLORS[order.status], borderColor: STATUS_COLORS[order.status] }}
+                  className={`order-card__status badge rounded-pill ${STATUS_BADGES[order.status]}`}
+                  style={{ color: STATUS_COLORS[order.status], borderColor: STATUS_COLORS[order.status], backgroundColor: 'transparent' }}
                 >
                   {STATUS_LABELS[order.status]}
                 </span>
@@ -95,6 +104,7 @@ export default function Orders() {
                   {cancelId === order.id ? (
                     <div className="cancel-form">
                       <input
+                        className="form-control"
                         placeholder="Motivo de anulación…"
                         value={cancelReason}
                         onChange={(e) => setCancelReason(e.target.value)}
@@ -106,14 +116,13 @@ export default function Orders() {
                       >
                         Confirmar anulación
                       </button>
-                      <button className="btn btn-outline" onClick={() => setCancelId(null)}>
+                      <button className="btn btn-outline-primary" onClick={() => setCancelId(null)}>
                         Cancelar
                       </button>
                     </div>
                   ) : (
                     <button
-                      className="btn btn-outline"
-                      style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
+                      className="btn btn-outline-primary"
                       onClick={() => setCancelId(order.id)}
                     >
                       Anular pedido

@@ -21,12 +21,11 @@ export default function Admin() {
     <main className="admin-page container">
       <h1 className="page-title">Panel de administración</h1>
 
-      {/* Tabs */}
-      <div className="admin-tabs">
+      <div className="admin-tabs nav nav-tabs border-0">
         {(['productos', 'usuarios', 'reportes'] as Tab[]).map((t) => (
           <button
             key={t}
-            className={`admin-tab ${tab === t ? 'active' : ''}`}
+            className={`admin-tab nav-link ${tab === t ? 'active' : ''}`}
             onClick={() => setTab(t)}
           >
             {{ productos: '🍱 Productos', usuarios: '👥 Usuarios', reportes: '📊 Reportes' }[t]}
@@ -34,7 +33,6 @@ export default function Admin() {
         ))}
       </div>
 
-      {/* ── Productos ── */}
       {tab === 'productos' && (
         <section className="admin-section">
           <div className="admin-section__header">
@@ -42,8 +40,8 @@ export default function Admin() {
             <button className="btn btn-primary">+ Nuevo producto</button>
           </div>
 
-          <div className="admin-table-wrap">
-            <table className="admin-table">
+          <div className="admin-table-wrap card border-0 shadow-sm">
+            <table className="admin-table table table-hover align-middle mb-0">
               <thead>
                 <tr>
                   <th>Nombre</th>
@@ -66,7 +64,7 @@ export default function Admin() {
                     <td>${p.price.toLocaleString('es-CL')}</td>
                     <td>
                       <button
-                        className={`admin-toggle ${p.available ? 'on' : 'off'}`}
+                        className={`admin-toggle badge border-0 ${p.available ? 'text-bg-success' : 'text-bg-danger'}`}
                         onClick={() => toggleAvailability(p.id)}
                       >
                         {p.available ? 'Disponible' : 'No disponible'}
@@ -74,7 +72,7 @@ export default function Admin() {
                     </td>
                     <td>
                       <div className="admin-actions">
-                        <button className="btn btn-outline" onClick={() => setEditId(editId === p.id ? null : p.id)}>
+                        <button className="btn btn-outline-primary btn-sm" onClick={() => setEditId(editId === p.id ? null : p.id)}>
                           Editar
                         </button>
                       </div>
@@ -94,7 +92,7 @@ export default function Admin() {
             <h2>Gestión de usuarios</h2>
             <button className="btn btn-primary">+ Nuevo usuario</button>
           </div>
-          <div className="admin-placeholder">
+          <div className="admin-placeholder card border-0 shadow-sm">
             <span>👥</span>
             <p>Lista de usuarios del sistema.</p>
             <p className="hint">Este módulo se conectará al backend en la siguiente unidad.</p>
@@ -102,19 +100,18 @@ export default function Admin() {
         </section>
       )}
 
-      {/* ── Reportes ── */}
       {tab === 'reportes' && (
         <section className="admin-section">
           <h2>Reporte de ventas</h2>
 
-          <div className="report-filters">
-            <div className="form-group">
-              <label>Desde</label>
-              <input type="date" defaultValue="2026-03-01" />
+          <div className="report-filters card border-0 shadow-sm">
+            <div>
+              <label className="form-label">Desde</label>
+              <input className="form-control" type="date" defaultValue="2026-03-01" />
             </div>
-            <div className="form-group">
-              <label>Hasta</label>
-              <input type="date" defaultValue="2026-03-12" />
+            <div>
+              <label className="form-label">Hasta</label>
+              <input className="form-control" type="date" defaultValue="2026-03-12" />
             </div>
             <button className="btn btn-primary" style={{ alignSelf: 'flex-end' }}>
               Buscar
@@ -122,21 +119,21 @@ export default function Admin() {
           </div>
 
           <div className="report-summary">
-            <div className="report-kpi">
+            <div className="report-kpi card border-0 shadow-sm">
               <span>Ventas totales</span>
               <strong>$187.430</strong>
             </div>
-            <div className="report-kpi">
+            <div className="report-kpi card border-0 shadow-sm">
               <span>Pedidos</span>
               <strong>24</strong>
             </div>
-            <div className="report-kpi">
+            <div className="report-kpi card border-0 shadow-sm">
               <span>Ticket promedio</span>
               <strong>$7.810</strong>
             </div>
           </div>
 
-          <div className="admin-placeholder" style={{ marginTop: '1.5rem' }}>
+          <div className="admin-placeholder card border-0 shadow-sm" style={{ marginTop: '1.5rem' }}>
             <span>📊</span>
             <p className="hint">La tabla detallada de ventas se conectará al backend.</p>
           </div>

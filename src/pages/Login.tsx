@@ -27,19 +27,20 @@ export default function Login() {
 
   return (
     <main className="auth-page">
-      <div className="auth-card card">
+      <div className="auth-card card border-0 shadow-sm">
         <div className="auth-card__header">
           <span className="auth-card__icon">🍣</span>
           <h1>Iniciar sesión</h1>
           <p>Bienvenido de vuelta a Fukusuke</p>
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && <div className="alert alert-danger">{error}</div>}
 
         <form onSubmit={handleSubmit} noValidate>
-          <div className="form-group">
-            <label htmlFor="email">Correo electrónico</label>
+          <div className="mb-3">
+            <label className="form-label" htmlFor="email">Correo electrónico</label>
             <input
+              className="form-control"
               id="email"
               type="email"
               value={email}
@@ -49,9 +50,10 @@ export default function Login() {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+          <div className="mb-3">
+            <label className="form-label" htmlFor="password">Contraseña</label>
             <input
+              className="form-control"
               id="password"
               type="password"
               value={password}
@@ -61,7 +63,7 @@ export default function Login() {
             />
           </div>
 
-          <button className="btn btn-primary auth-card__submit" type="submit" disabled={loading}>
+          <button className="btn btn-primary auth-card__submit w-100" type="submit" disabled={loading}>
             {loading ? 'Ingresando…' : 'Iniciar sesión'}
           </button>
         </form>

@@ -10,6 +10,10 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const navLinkClassName = ({ isActive }: { isActive: boolean }) => (
+    `nav-link px-lg-3 ${isActive ? 'active fw-semibold' : ''}`
+  );
+
   const handleLogout = () => {
     logout();
     navigate('/');
@@ -17,71 +21,81 @@ export default function Navbar() {
   };
 
   return (
-    <header className="navbar">
+    <header className="navbar navbar-expand-lg navbar-dark site-navbar sticky-top py-0">
       <div className="container navbar__inner">
-        {/* Logo */}
-        <Link to="/" className="navbar__logo">
-          🍣 <span>Fukusuke</span>
+        <Link to="/" className="navbar-brand navbar__logo" onClick={() => setMenuOpen(false)}>
+          <span className="navbar__logo-mark">🍣</span>
+          <span>Fukusuke</span>
         </Link>
 
-        {/* Hamburger (mobile) */}
         <button
-          className={`navbar__hamburger ${menuOpen ? 'open' : ''}`}
-          onClick={() => setMenuOpen((o) => !o)}
+          className="navbar-toggler border-0 shadow-none"
+          type="button"
+          onClick={() => setMenuOpen((open) => !open)}
           aria-label="Abrir menú"
+          aria-controls="main-navbar"
+          aria-expanded={menuOpen}
         >
-          <span />
-          <span />
-          <span />
+          <span className="navbar-toggler-icon" />
         </button>
 
-        {/* Links */}
-        <nav className={`navbar__links ${menuOpen ? 'open' : ''}`}>
-          <NavLink to="/" end onClick={() => setMenuOpen(false)}>Inicio</NavLink>
-          <NavLink to="/menu" onClick={() => setMenuOpen(false)}>Menú</NavLink>
+        <div className={`collapse navbar-collapse ${menuOpen ? 'show' : ''}`} id="main-navbar">
+          <nav className="navbar-nav me-auto mb-3 mb-lg-0 align-items-lg-center gap-lg-1">
+            <NavLink to="/" end className={navLinkClassName} onClick={() => setMenuOpen(false)}>
+              Inicio
+            </NavLink>
+            <NavLink to="/menu" className={navLinkClassName} onClick={() => setMenuOpen(false)}>
+              Menú
+            </NavLink>
 
-          {isAuthenticated && (
-            <>
-              <NavLink to="/cart" onClick={() => setMenuOpen(false)}>
-                Carrito
-                {totalItems > 0 && <span className="badge">{totalItems}</span>}
+            {isAuthenticated && (
+              <>
+                <NavLink to="/cart" className={navLinkClassName} onClick={() => setMenuOpen(false)}>
+                  Carrito
+                  {totalItems > 0 && (
+                    <span className="badge rounded-pill text-bg-danger ms-2">{totalItems}</span>
+                  )}
+                </NavLink>
+                <NavLink to="/orders" className={navLinkClassName} onClick={() => setMenuOpen(false)}>
+                  Mis Pedidos
+                </NavLink>
+              </>
+            )}
+
+            {isAuthenticated && (user?.role === 'admin' || user?.role === 'dueño') && (
+              <NavLink to="/admin" className={navLinkClassName} onClick={() => setMenuOpen(false)}>
+                Admin
               </NavLink>
-              <NavLink to="/orders" onClick={() => setMenuOpen(false)}>Mis Pedidos</NavLink>
-            </>
-          )}
+            )}
+          </nav>
 
-          {isAuthenticated && (user?.role === 'admin' || user?.role === 'dueño') && (
-            <NavLink to="/admin" onClick={() => setMenuOpen(false)}>Admin</NavLink>
-          )}
-        </nav>
-
-        {/* Auth */}
-        <div className={`navbar__auth ${menuOpen ? 'open' : ''}`}>
-          {isAuthenticated ? (
-            <div className="navbar__user">
-              <span className="navbar__user-name">Hola, {user?.fullName.split(' ')[0]}</span>
-              <button className="btn btn-outline" onClick={handleLogout}>
-                Cerrar sesión
-              </button>
-            </div>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="btn btn-outline"
-                onClick={() => setMenuOpen(false)}
-              >
-                Iniciar sesión
-              </Link>
-              <Link
-                to="/register"
-                className="btn btn-primary"
-                onClick={() => setMenuOpen(false)}
-              >
-                Registrarse
-              </Link>
-            </>
-          )}
+          <div className="d-flex flex-column flex-lg-row align-items-lg-center gap-2 navbar__auth">
+            {isAuthenticated ? (
+              <div className="d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3 ms-lg-3">
+                <span className="navbar__user-name">Hola, {user?.fullName.split(' ')[0]}</span>
+                <button className="btn btn-outline-light btn-sm px-3" onClick={handleLogout}>
+                  Cerrar sesión
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="btn btn-outline-light btn-sm px-3"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Iniciar sesión
+                </Link>
+                <Link
+                  to="/register"
+                  className="btn btn-primary btn-sm px-3"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Registrarse
+                </Link>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </header>

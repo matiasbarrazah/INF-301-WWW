@@ -34,7 +34,7 @@ export default function Checkout() {
   if (success) {
     return (
       <main className="checkout-page container">
-        <div className="checkout-success">
+        <div className="checkout-success card border-0 shadow-sm">
           <span>✅</span>
           <h2>¡Pedido #FKS-{orderId} recibido!</h2>
           <p>Te enviaremos la boleta a <strong>{user?.email}</strong>.</p>
@@ -49,18 +49,18 @@ export default function Checkout() {
       <h1 className="page-title">Confirmar pedido</h1>
 
       <div className="checkout-layout">
-        {/* Formulario */}
-        <form className="checkout-form card" onSubmit={handleSubmit}>
+        <form className="checkout-form card border-0 shadow-sm" onSubmit={handleSubmit}>
           <h2>Datos de entrega</h2>
 
-          <div className="form-group">
-            <label>Nombre del receptor</label>
-            <input value={user?.fullName ?? ''} readOnly />
+          <div className="mb-3">
+            <label className="form-label">Nombre del receptor</label>
+            <input className="form-control" value={user?.fullName ?? ''} readOnly />
           </div>
 
-          <div className="form-group">
-            <label>Dirección de despacho</label>
+          <div className="mb-3">
+            <label className="form-label">Dirección de despacho</label>
             <input
+              className="form-control"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Av. Pajaritos 1234, Dpto 5B, Maipú"
@@ -68,9 +68,9 @@ export default function Checkout() {
             />
           </div>
 
-          <div className="form-group">
-            <label>Correo electrónico (boleta)</label>
-            <input value={user?.email ?? ''} readOnly />
+          <div className="mb-3">
+            <label className="form-label">Correo electrónico (boleta)</label>
+            <input className="form-control" value={user?.email ?? ''} readOnly />
           </div>
 
           <hr className="divider" />
@@ -78,26 +78,26 @@ export default function Checkout() {
 
           <div className="checkout-payments">
             {PAYMENT_METHODS.map((m) => (
-              <label key={m.value} className={`payment-option ${payment === m.value ? 'selected' : ''}`}>
+              <label key={m.value} className={`payment-option form-check ${payment === m.value ? 'selected' : ''}`}>
                 <input
+                  className="form-check-input"
                   type="radio"
                   name="payment"
                   value={m.value}
                   checked={payment === m.value}
                   onChange={() => setPayment(m.value)}
                 />
-                {m.label}
+                <span className="form-check-label">{m.label}</span>
               </label>
             ))}
           </div>
 
-          <button className="btn btn-primary checkout-submit" type="submit" disabled={loading}>
+          <button className="btn btn-primary checkout-submit w-100" type="submit" disabled={loading}>
             {loading ? 'Procesando pago…' : `Pagar $${totalPrice.toLocaleString('es-CL')}`}
           </button>
         </form>
 
-        {/* Resumen */}
-        <aside className="checkout-summary card">
+        <aside className="checkout-summary card border-0 shadow-sm">
           <h2>Resumen</h2>
           <hr className="divider" />
           {items.map(({ product, quantity }) => (

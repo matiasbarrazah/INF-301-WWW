@@ -16,6 +16,7 @@
   width: 100%;
   max-width: 440px;
   padding: 2.5rem 2rem;
+  border-radius: 1rem;
 }
 
 .auth-card--wide {
@@ -44,12 +45,26 @@
   font-size: 0.92rem;
 }
 
+.section-title {
+  font-size: 1rem;
+  color: var(--color-secondary);
+  margin-bottom: 0.25rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.field-error {
+  display: inline-block;
+  margin-top: 0.35rem;
+  color: var(--color-primary);
+  font-size: 0.82rem;
+}
+
 .auth-card__submit {
-  width: 100%;
   justify-content: center;
   padding: 0.75rem;
   font-size: 1rem;
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
 }
 
 .auth-card__footer {
@@ -78,22 +93,24 @@
   color: var(--color-primary);
 }
 
-/* Register form */
-.register-form h3 {
-  font-size: 1rem;
-  color: var(--color-secondary);
-  margin-bottom: 0.8rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1.5px solid var(--color-border);
+.register-form .form-control,
+.register-form .form-select,
+.auth-card .form-control {
+  border-radius: 0.75rem;
+  border-color: var(--color-border);
+}
+
+.register-form .form-control:focus,
+.register-form .form-select:focus,
+.auth-card .form-control:focus {
+  border-color: rgba(var(--bs-primary-rgb), 0.6);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.12);
 }
 
 .register-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 1.2rem;
+  margin-top: 0.15rem;
 }
 
 @media (max-width: 600px) {
-  .register-grid { grid-template-columns: 1fr; }
   .auth-card      { padding: 1.5rem 1rem; }
 }

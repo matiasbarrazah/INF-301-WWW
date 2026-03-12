@@ -11,7 +11,7 @@ export default function Cart() {
     return (
       <main className="cart-page container">
         <h1 className="page-title">Tu carrito</h1>
-        <div className="cart-empty">
+        <div className="cart-empty card border-0 shadow-sm">
           <span>🛒</span>
           <p>Tu carrito está vacío</p>
           <Link to="/menu" className="btn btn-primary">Ver menú</Link>
@@ -25,10 +25,9 @@ export default function Cart() {
       <h1 className="page-title">Tu carrito</h1>
 
       <div className="cart-layout">
-        {/* Ítems */}
         <section className="cart-items">
           {items.map(({ product, quantity }) => (
-            <div key={product.id} className="cart-item card">
+            <div key={product.id} className="cart-item card border-0 shadow-sm">
               <img src={product.image} alt={product.name} />
               <div className="cart-item__info">
                 <h3>{product.name}</h3>
@@ -38,17 +37,18 @@ export default function Cart() {
               </div>
               <div className="cart-item__qty">
                 <button
+                  className="btn btn-outline-secondary btn-sm rounded-circle"
                   onClick={() => updateQuantity(product.id, quantity - 1)}
                   disabled={quantity <= 1}
                 >−</button>
                 <span>{quantity}</span>
-                <button onClick={() => updateQuantity(product.id, quantity + 1)}>+</button>
+                <button className="btn btn-outline-secondary btn-sm rounded-circle" onClick={() => updateQuantity(product.id, quantity + 1)}>+</button>
               </div>
               <p className="cart-item__subtotal">
                 ${(product.price * quantity).toLocaleString('es-CL')}
               </p>
               <button
-                className="cart-item__remove"
+                className="cart-item__remove btn btn-link text-danger text-decoration-none"
                 onClick={() => removeItem(product.id)}
                 aria-label="Eliminar"
               >
@@ -57,13 +57,12 @@ export default function Cart() {
             </div>
           ))}
 
-          <button className="btn btn-outline cart-clear" onClick={clearCart}>
+          <button className="btn btn-outline-primary cart-clear" onClick={clearCart}>
             Vaciar carrito
           </button>
         </section>
 
-        {/* Resumen */}
-        <aside className="cart-summary card">
+        <aside className="cart-summary card border-0 shadow-sm">
           <h2>Resumen del pedido</h2>
           <hr className="divider" />
 

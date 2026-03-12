@@ -1,6 +1,9 @@
 .product-card {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 360px;
+  margin-inline: auto;
 }
 
 .product-card--unavailable {

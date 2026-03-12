@@ -35,21 +35,20 @@ export default function Menu() {
           Elige entre {PRODUCTS.length} preparaciones frescas y auténticas
         </p>
 
-        {/* Filtros */}
-        <div className="menu-filters">
+        <div className="menu-filters card border-0 shadow-sm">
           <input
             type="text"
             placeholder="Buscar producto…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="menu-filters__search"
+            className="menu-filters__search form-control"
           />
 
           <div className="menu-filters__cats">
             {CATEGORIES.map((c) => (
               <button
                 key={c.value}
-                className={`menu-filters__cat-btn ${category === c.value ? 'active' : ''}`}
+                className={`menu-filters__cat-btn btn btn-sm rounded-pill ${category === c.value ? 'btn-primary active' : 'btn-outline-primary'}`}
                 onClick={() => setCategory(c.value)}
               >
                 {c.label}
@@ -57,28 +56,30 @@ export default function Menu() {
             ))}
           </div>
 
-          <label className="menu-filters__available">
+          <label className="menu-filters__available form-check m-0">
             <input
+              className="form-check-input"
               type="checkbox"
               checked={onlyAvailable}
               onChange={(e) => setOnlyAvailable(e.target.checked)}
             />
-            Solo disponibles
+            <span className="form-check-label">Solo disponibles</span>
           </label>
         </div>
 
-        {/* Resultados */}
         {filtered.length === 0 ? (
-          <div className="menu-empty">
+          <div className="menu-empty card border-0 shadow-sm">
             <p>No se encontraron productos con ese filtro.</p>
-            <button className="btn btn-outline" onClick={() => { setSearch(''); setCategory('todos'); }}>
+            <button className="btn btn-outline-primary" onClick={() => { setSearch(''); setCategory('todos'); }}>
               Limpiar filtros
             </button>
           </div>
         ) : (
-          <div className="menu-grid">
+          <div className="row g-4">
             {filtered.map((p) => (
-              <ProductCard key={p.id} product={p} />
+              <div key={p.id} className="col-12 col-md-6 col-xl-4 d-flex">
+                <ProductCard product={p} />
+              </div>
             ))}
           </div>
         )}
