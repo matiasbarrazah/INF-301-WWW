@@ -192,13 +192,7 @@ Puede ser caché del servidor TypeScript de VS Code. Solución típica:
 - Reiniciar TS Server.
 - Recargar ventana de VS Code.
 
-## Mejoras futuras
 
-- Integrar backend real para autenticación, pedidos y pagos.
-- Persistencia de carrito/pedidos por usuario.
-- Integración con pasarela real (Stripe/Mercado Pago).
-- Tests unitarios y de integración.
-- Internacionalización y accesibilidad avanzada.
 
 ---
 
