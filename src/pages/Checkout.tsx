@@ -5,9 +5,32 @@ import { useAuth } from '../context/AuthContext';
 import './Checkout.css';
 
 const PAYMENT_METHODS = [
+  { value: 'tarjeta', label: '💳 Tarjeta crédito/débito' },
   { value: 'servipag', label: '💳 Servipag' },
   { value: 'transferencia', label: '🏦 Transferencia bancaria' },
-];
+] as const;
+
+type PaymentMethod = typeof PAYMENT_METHODS[number]['value'];
+type CardBrand = 'visa' | 'mastercard' | 'amex' | 'unknown';
+
+const detectCardBrand = (number: string): CardBrand => {
+  const digits = number.replace(/\D/g, '');
+  if (/^4/.test(digits)) return 'visa';
+  if (/^(5[1-5]|2(2[2-9]|[3-6]\d|7[01]|720))/.test(digits)) return 'mastercard';
+  if (/^3[47]/.test(digits)) return 'amex';
+  return 'unknown';
+};
+
+const formatCardNumber = (value: string): string => {
+  const digits = value.replace(/\D/g, '').slice(0, 16);
+  return digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+};
+
+const formatExpiry = (value: string): string => {
+  const digits = value.replace(/\D/g, '').slice(0, 4);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+};
 
 export default function Checkout() {
   const { items, totalPrice, clearCart } = useCart();
@@ -15,14 +38,35 @@ export default function Checkout() {
   const navigate = useNavigate();
 
   const [address, setAddress] = useState(user?.address ?? '');
-  const [payment, setPayment] = useState('servipag');
+  const [payment, setPayment] = useState<PaymentMethod>('tarjeta');
+  const [card, setCard] = useState({
+    holder: '',
+    number: '',
+    expiry: '',
+    cvv: '',
+  });
+  const [cardError, setCardError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [orderId] = useState(() => Math.floor(Math.random() * 90000) + 10000);
 
+  const detectedBrand = detectCardBrand(card.number);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!address) return;
+
+    if (payment === 'tarjeta') {
+      const cardDigits = card.number.replace(/\D/g, '');
+      const expOk = /^(0[1-9]|1[0-2])\/\d{2}$/.test(card.expiry);
+      const cvvOk = /^\d{3,4}$/.test(card.cvv);
+      if (!card.holder || cardDigits.length < 15 || !expOk || !cvvOk) {
+        setCardError('Completa correctamente los datos de la tarjeta.');
+        return;
+      }
+    }
+
+    setCardError('');
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1200));
     setLoading(false);
@@ -85,12 +129,69 @@ export default function Checkout() {
                   name="payment"
                   value={m.value}
                   checked={payment === m.value}
-                  onChange={() => setPayment(m.value)}
+                  onChange={() => setPayment(m.value as PaymentMethod)}
                 />
                 <span className="form-check-label">{m.label}</span>
               </label>
             ))}
           </div>
+
+          {payment === 'tarjeta' && (
+            <div className="checkout-card-box">
+              <div className="checkout-card-brands" aria-label="Marcas disponibles">
+                <span className={`brand-pill ${detectedBrand === 'visa' ? 'active' : ''}`}>VISA</span>
+                <span className={`brand-pill ${detectedBrand === 'mastercard' ? 'active' : ''}`}>Mastercard</span>
+                <span className={`brand-pill ${detectedBrand === 'amex' ? 'active' : ''}`}>Amex</span>
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Nombre titular</label>
+                <input
+                  className="form-control"
+                  placeholder="Como aparece en la tarjeta"
+                  value={card.holder}
+                  onChange={(e) => setCard((prev) => ({ ...prev, holder: e.target.value }))}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Número de tarjeta</label>
+                <input
+                  className="form-control"
+                  inputMode="numeric"
+                  placeholder="1234 5678 9012 3456"
+                  value={card.number}
+                  onChange={(e) => setCard((prev) => ({ ...prev, number: formatCardNumber(e.target.value) }))}
+                />
+              </div>
+
+              <div className="row g-3">
+                <div className="col-7">
+                  <label className="form-label">Vencimiento</label>
+                  <input
+                    className="form-control"
+                    inputMode="numeric"
+                    placeholder="MM/YY"
+                    value={card.expiry}
+                    onChange={(e) => setCard((prev) => ({ ...prev, expiry: formatExpiry(e.target.value) }))}
+                  />
+                </div>
+                <div className="col-5">
+                  <label className="form-label">CVV</label>
+                  <input
+                    className="form-control"
+                    inputMode="numeric"
+                    placeholder="123"
+                    value={card.cvv}
+                    onChange={(e) => setCard((prev) => ({ ...prev, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) }))}
+                  />
+                </div>
+              </div>
+
+              {cardError && <div className="alert alert-danger mt-3 mb-0">{cardError}</div>}
+              <p className="checkout-card-note">Modo demo: estos datos no se almacenan ni procesan.</p>
+            </div>
+          )}
 
           <button className="btn btn-primary checkout-submit w-100" type="submit" disabled={loading}>
             {loading ? 'Procesando pago…' : `Pagar $${totalPrice.toLocaleString('es-CL')}`}

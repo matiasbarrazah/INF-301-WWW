@@ -53,7 +53,7 @@ export default function Navbar() {
                 <NavLink to="/cart" className={navLinkClassName} onClick={() => setMenuOpen(false)}>
                   Carrito
                   {totalItems > 0 && (
-                    <span className="badge rounded-pill text-bg-danger ms-2">{totalItems}</span>
+                    <span className="badge badge-counter rounded-pill text-bg-danger ms-2">{totalItems}</span>
                   )}
                 </NavLink>
                 <NavLink to="/orders" className={navLinkClassName} onClick={() => setMenuOpen(false)}>

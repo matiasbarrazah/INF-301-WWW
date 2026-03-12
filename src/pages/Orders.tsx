@@ -12,15 +12,6 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
   anulado: '❌ Anulado',
 };
 
-const STATUS_COLORS: Record<OrderStatus, string> = {
-  pendiente: '#f39c12',
-  pagado: '#27ae60',
-  preparando: '#2980b9',
-  en_camino: '#8e44ad',
-  entregado: '#27ae60',
-  anulado: '#c0392b',
-};
-
 // Pedidos de ejemplo para la demo
 const DEMO_ORDERS: Order[] = [
   {
@@ -86,7 +77,6 @@ export default function Orders() {
                 </div>
                 <span
                   className={`order-card__status badge rounded-pill ${STATUS_BADGES[order.status]}`}
-                  style={{ color: STATUS_COLORS[order.status], borderColor: STATUS_COLORS[order.status], backgroundColor: 'transparent' }}
                 >
                   {STATUS_LABELS[order.status]}
                 </span>

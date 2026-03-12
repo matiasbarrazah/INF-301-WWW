@@ -119,7 +119,7 @@ img {
   background: #1a252f;
 }
 
-.badge {
+.badge-counter {
   display: inline-flex;
   align-items: center;
   justify-content: center;
