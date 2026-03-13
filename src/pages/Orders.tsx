@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import type { Order, OrderStatus } from '../types';
+import { useOrders } from '../context/OrderContext';
+import type { OrderStatus } from '../types';
 import './Orders.css';
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
@@ -11,28 +12,6 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
   entregado: '📦 Entregado',
   anulado: '❌ Anulado',
 };
-
-// Pedidos de ejemplo para la demo
-const DEMO_ORDERS: Order[] = [
-  {
-    id: 1,
-    userId: 1,
-    items: [],
-    total: 14970,
-    status: 'entregado',
-    createdAt: '2026-03-10T18:32:00',
-    address: 'Av. Pajaritos 1234, Maipú',
-  },
-  {
-    id: 2,
-    userId: 1,
-    items: [],
-    total: 9490,
-    status: 'preparando',
-    createdAt: '2026-03-12T20:05:00',
-    address: 'Av. Pajaritos 1234, Maipú',
-  },
-];
 
 const STATUS_BADGES: Record<OrderStatus, string> = {
   pendiente: 'text-bg-warning',
@@ -45,25 +24,33 @@ const STATUS_BADGES: Record<OrderStatus, string> = {
 
 export default function Orders() {
   const { user } = useAuth();
-  const [orders] = useState<Order[]>(DEMO_ORDERS);
+  const { orders, cancelOrder } = useOrders();
   const [cancelId, setCancelId] = useState<number | null>(null);
   const [cancelReason, setCancelReason] = useState('');
+  const visibleOrders = orders.filter((order) => order.userId === user?.id);
 
-  const canCancel = (s: OrderStatus) => s === 'pendiente' || s === 'pagado';
+  const canCancel = (s: OrderStatus) => s === 'pendiente' || s === 'pagado' || s === 'preparando';
+
+  const handleCancel = (orderId: number) => {
+    if (!cancelReason.trim()) return;
+    cancelOrder(orderId, cancelReason.trim());
+    setCancelId(null);
+    setCancelReason('');
+  };
 
   return (
     <main className="orders-page container">
       <h1 className="page-title">Mis pedidos</h1>
       <p className="page-subtitle">Hola, {user?.fullName}. Aquí están tus órdenes.</p>
 
-      {orders.length === 0 ? (
+      {visibleOrders.length === 0 ? (
         <div className="orders-empty card border-0 shadow-sm">
           <span>📋</span>
           <p>Aún no tienes pedidos.</p>
         </div>
       ) : (
         <div className="orders-list">
-          {orders.map((order) => (
+          {visibleOrders.map((order) => (
             <div key={order.id} className="order-card card border-0 shadow-sm">
               <div className="order-card__header">
                 <div>
@@ -84,9 +71,15 @@ export default function Orders() {
 
               <div className="order-card__body">
                 <p>📍 {order.address}</p>
+                {order.items.length > 0 && (
+                  <p>
+                    🍱 {order.items.map((item) => `${item.product.name} × ${item.quantity}`).join(', ')}
+                  </p>
+                )}
                 <p className="order-card__total">
                   Total: <strong>${order.total.toLocaleString('es-CL')}</strong>
                 </p>
+                {order.cancelReason && <p>📝 Motivo anulación: {order.cancelReason}</p>}
               </div>
 
               {canCancel(order.status) && (
@@ -102,7 +95,7 @@ export default function Orders() {
                       <button
                         className="btn btn-primary"
                         disabled={!cancelReason}
-                        onClick={() => { setCancelId(null); setCancelReason(''); }}
+                        onClick={() => handleCancel(order.id)}
                       >
                         Confirmar anulación
                       </button>

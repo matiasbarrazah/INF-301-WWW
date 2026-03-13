@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useOrders } from '../context/OrderContext';
 import './Checkout.css';
 
 const PAYMENT_METHODS = [
@@ -35,6 +36,7 @@ const formatExpiry = (value: string): string => {
 export default function Checkout() {
   const { items, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
+  const { createOrder } = useOrders();
   const navigate = useNavigate();
 
   const [address, setAddress] = useState(user?.address ?? '');
@@ -54,7 +56,7 @@ export default function Checkout() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!address) return;
+    if (!address || !user || items.length === 0) return;
 
     if (payment === 'tarjeta') {
       const cardDigits = card.number.replace(/\D/g, '');
@@ -69,11 +71,32 @@ export default function Checkout() {
     setCardError('');
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1200));
+    createOrder({
+      userId: user.id,
+      items,
+      total: totalPrice,
+      address,
+    });
     setLoading(false);
     setSuccess(true);
     clearCart();
     setTimeout(() => navigate('/orders'), 2000);
   };
+
+  if (items.length === 0) {
+    return (
+      <main className="checkout-page container">
+        <div className="checkout-success card border-0 shadow-sm">
+          <span>🛒</span>
+          <h2>No hay productos para pagar</h2>
+          <p>Primero arma un pedido desde el menú.</p>
+          <button className="btn btn-primary" onClick={() => navigate('/menu')}>
+            Ir al menú
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   if (success) {
     return (

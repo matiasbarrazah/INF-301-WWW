@@ -9,6 +9,7 @@ El proyecto simula un flujo completo de compra (catálogo, carrito, checkout y p
 - [Resumen](#resumen)
 - [Stack tecnológico](#stack-tecnologico)
 - [Requisitos](#requisitos)
+- [Requerimientos no funcionales](#requerimientos-no-funcionales)
 - [Instalación y ejecución](#instalacion-y-ejecucion)
 - [Scripts disponibles](#scripts-disponibles)
 - [Flujo demo](#flujo-demo)
@@ -44,6 +45,26 @@ Fukusuke Frontend implementa:
 
 - Node.js 18+ (recomendado)
 - npm 9+
+
+## Requerimientos no funcionales
+
+- La solución debe ser **web** y con **arquitectura por capas**, separando interfaz, lógica y datos.
+- La app final del ramo considera integración con **base de datos Oracle** y tecnologías orientadas a objetos como **.NET** o **J2EE**; en esta primera unidad solo se implementa el frontend.
+- La integración entre sistemas debe contemplar **Web Services**.
+- El envío de correos y validación de cuentas debe considerar una **API de correo**.
+- Debe incluir **medidas de seguridad**: cifrado de claves y control de sesiones.
+- Todas las entradas deben tener **validaciones** correspondientes.
+- La interfaz debe ser **usable**, con mensajes de error informativos y orientados al usuario final.
+- Debe existir un **módulo de ayuda en línea** y manuales de usuario estructurados.
+- La aplicación debe tener diseño **responsive** para computador, tablet y móvil.
+- El sistema debe aspirar a un tiempo de aprendizaje menor a 4 horas y a una tasa de error menor al 1%.
+- Las interfaces deben estar **bien formadas** visualmente y ser coherentes en todo el sistema.
+
+### Estado actual frente a los no funcionales
+
+- **Cumplido parcialmente**: arquitectura separada en `pages`, `components`, `context`, `data` y `types`.
+- **Cumplido parcialmente**: diseño responsive y validaciones básicas de formularios.
+- **Pendiente para próximas unidades**: backend real, base de datos, web services, cifrado real, validación real de correo, ayuda en línea y manuales.
 
 ## Instalacion y ejecucion
 
