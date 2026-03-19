@@ -50,6 +50,15 @@ function cloneItems(items: CartItem[]): CartItem[] {
   return items.map((item) => ({ ...item }));
 }
 
+function canBeCancelled(status: Order['status']): boolean {
+  return (
+    status === 'pendiente' ||
+    status === 'pagado' ||
+    status === 'preparando' ||
+    status === 'entregado'
+  );
+}
+
 export function OrderProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<Order[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
@@ -84,10 +93,13 @@ export function OrderProvider({ children }: { children: ReactNode }) {
         return newOrder;
       },
       cancelOrder: (orderId, cancelReason) => {
+        const reason = cancelReason.trim();
+        if (!reason) return;
+
         setOrders((current) =>
           current.map((order) =>
-            order.id === orderId
-              ? { ...order, status: 'anulado', cancelReason }
+            order.id === orderId && canBeCancelled(order.status)
+              ? { ...order, status: 'anulado', cancelReason: reason }
               : order
           )
         );

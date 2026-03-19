@@ -1,15 +1,28 @@
 import { useState } from 'react';
 import { PRODUCTS } from '../data/products';
 import { CATEGORY_LABELS } from '../data/products';
-import type { Product } from '../types';
+import { useOrders } from '../context/OrderContext';
+import type { OrderStatus, Product } from '../types';
 import './Admin.css';
 
-type Tab = 'productos' | 'usuarios' | 'reportes';
+type Tab = 'productos' | 'usuarios' | 'pedidos' | 'reportes';
+
+const STATUS_LABELS: Record<OrderStatus, string> = {
+  pendiente: 'Pendiente',
+  pagado: 'Pagado',
+  preparando: 'Preparando',
+  en_camino: 'En camino',
+  entregado: 'Entregado',
+  anulado: 'Anulado',
+};
 
 export default function Admin() {
   const [tab, setTab] = useState<Tab>('productos');
   const [products, setProducts] = useState<Product[]>(PRODUCTS);
   const [editId, setEditId] = useState<number | null>(null);
+  const [cancelId, setCancelId] = useState<number | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
+  const { orders, cancelOrder } = useOrders();
 
   const toggleAvailability = (id: number) => {
     setProducts((ps) =>
@@ -22,13 +35,13 @@ export default function Admin() {
       <h1 className="page-title">Panel de administración</h1>
 
       <div className="admin-tabs nav nav-tabs border-0">
-        {(['productos', 'usuarios', 'reportes'] as Tab[]).map((t) => (
+        {(['productos', 'usuarios', 'pedidos', 'reportes'] as Tab[]).map((t) => (
           <button
             key={t}
             className={`admin-tab nav-link ${tab === t ? 'active' : ''}`}
             onClick={() => setTab(t)}
           >
-            {{ productos: '🍱 Productos', usuarios: '👥 Usuarios', reportes: '📊 Reportes' }[t]}
+            {{ productos: '🍱 Productos', usuarios: '👥 Usuarios', pedidos: '📦 Pedidos', reportes: '📊 Reportes' }[t]}
           </button>
         ))}
       </div>
@@ -96,6 +109,99 @@ export default function Admin() {
             <span>👥</span>
             <p>Lista de usuarios del sistema.</p>
             <p className="hint">Este módulo se conectará al backend en la siguiente unidad.</p>
+          </div>
+        </section>
+      )}
+
+      {tab === 'pedidos' && (
+        <section className="admin-section">
+          <div className="admin-section__header">
+            <h2>Gestión de pedidos</h2>
+          </div>
+
+          <div className="admin-table-wrap card border-0 shadow-sm">
+            <table className="admin-table table table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Cliente</th>
+                  <th>Estado</th>
+                  <th>Total</th>
+                  <th>Fecha</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.length === 0 ? (
+                  <tr>
+                    <td colSpan={6}>
+                      <div className="admin-empty-row">No hay pedidos registrados.</div>
+                    </td>
+                  </tr>
+                ) : (
+                  orders.map((order) => (
+                    <tr key={order.id}>
+                      <td>#{String(order.id).slice(-6)}</td>
+                      <td>Usuario #{order.userId}</td>
+                      <td>
+                        <span className={`badge ${order.status === 'anulado' ? 'text-bg-danger' : 'text-bg-primary'}`}>
+                          {STATUS_LABELS[order.status]}
+                        </span>
+                      </td>
+                      <td>${order.total.toLocaleString('es-CL')}</td>
+                      <td>
+                        {new Date(order.createdAt).toLocaleDateString('es-CL', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })}
+                      </td>
+                      <td>
+                        {order.status === 'anulado' ? (
+                          <span className="text-muted small">Ya anulado</span>
+                        ) : cancelId === order.id ? (
+                          <div className="admin-cancel-box">
+                            <input
+                              className="form-control form-control-sm"
+                              placeholder="Motivo de anulación"
+                              value={cancelReason}
+                              onChange={(e) => setCancelReason(e.target.value)}
+                            />
+                            <button
+                              className="btn btn-sm btn-danger"
+                              disabled={!cancelReason.trim()}
+                              onClick={() => {
+                                cancelOrder(order.id, cancelReason.trim());
+                                setCancelId(null);
+                                setCancelReason('');
+                              }}
+                            >
+                              Confirmar
+                            </button>
+                            <button
+                              className="btn btn-sm btn-outline-secondary"
+                              onClick={() => {
+                                setCancelId(null);
+                                setCancelReason('');
+                              }}
+                            >
+                              Cerrar
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            className="btn btn-sm btn-outline-danger"
+                            onClick={() => setCancelId(order.id)}
+                          >
+                            Anular pedido
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </section>
       )}

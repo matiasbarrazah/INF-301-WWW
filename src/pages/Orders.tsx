@@ -29,7 +29,8 @@ export default function Orders() {
   const [cancelReason, setCancelReason] = useState('');
   const visibleOrders = orders.filter((order) => order.userId === user?.id);
 
-  const canCancel = (s: OrderStatus) => s === 'pendiente' || s === 'pagado' || s === 'preparando';
+  const canCancel = (s: OrderStatus) =>
+    s === 'pendiente' || s === 'pagado' || s === 'preparando' || s === 'entregado';
 
   const handleCancel = (orderId: number) => {
     if (!cancelReason.trim()) return;
